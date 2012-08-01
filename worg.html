@@ -1,0 +1,152 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!-- Consider adding a manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/i/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title></title>
+  <meta name="description" content="">
+
+  <!-- Mobile viewport optimized: h5bp.com/viewport -->
+  <meta name="viewport" content="width=device-width">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except this Modernizr build.
+       Modernizr enables HTML5 elements & feature detects for optimal performance.
+       Create your own custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="js/libs/modernizr-2.5.3.min.js"></script>
+</head>
+<body>
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+  <header>
+
+  </header>
+  <div role="main">
+    <canvas id="canvas" style="border: solid 1px blue; padding-top: 10px;"></canvas>
+  </div>
+  <footer>
+
+  </footer>
+
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.1.min.js"><\/script>')</script>
+  <script src="js/libs/jquery.hotkeys.js"></script>
+
+  <script type="text/javascript">
+    var settings = {
+      CANVAS_HEIGHT: 120,
+      CANVAS_WIDTH: 1200,
+
+      FPS: 12,
+
+      SPRITE_HEIGHT: 109,
+      SPRITE_WIDTH: 138,
+      SPRITE_ROW: 1,
+      SPRITE_SPEED: 0
+    };
+
+    var SPEED = 13;
+
+    var canvas = $('#canvas')[0];
+    $(canvas).attr('height', settings.CANVAS_HEIGHT);
+    $(canvas).attr('width', settings.CANVAS_WIDTH);
+
+    var context = canvas.getContext('2d');
+    var sprite = new Image();
+    var offset = 0;
+    var posX = 0;
+
+    $(document).ready(function() {
+      $(document).keydown(function(key) {
+        switch(key.which) {
+          case 39: // right
+            settings.SPRITE_ROW = 1;
+            settings.SPRITE_SPEED = SPEED;
+            break;
+          case 37: // left
+            settings.SPRITE_ROW = 0;
+            settings.SPRITE_SPEED = 0 - SPEED;
+            break;
+          default: // stop
+            //settings.SPRITE_ROW = 3;
+            settings.SPRITE_SPEED = 0;
+        }
+      });
+
+
+      sprite.onload = function() {
+        // Draw dude standing
+        context.drawImage(sprite, 0, (settings.SPRITE_ROW * settings.SPRITE_HEIGHT), settings.SPRITE_WIDTH, settings.SPRITE_HEIGHT, 0, 0, settings.SPRITE_WIDTH, settings.SPRITE_HEIGHT); // 192x256, 32x64
+
+        var i = 0;
+
+        setInterval(function() { i++; update(i); draw(context, sprite); }, 1000 / settings.FPS);
+      }
+
+      sprite.src = 'img/worg.png';
+
+
+      $("#findCompany").click(function() {
+        $("#result").show();
+      });
+
+      $("#clearResult").click(function() {
+        $("#result").hide();
+      });
+    });
+
+    var update = function(i) {
+      offset = (i % 6);
+      offset *= settings.SPRITE_WIDTH;
+    };
+
+    var draw = function(context, sprite) {
+      // posX moves the guy across the canvas.
+      posX += settings.SPRITE_SPEED;
+
+      if(posX > (settings.CANVAS_WIDTH + settings.SPRITE_WIDTH)) {
+        posX = 0 - settings.SPRITE_WIDTH;
+      }
+      else if(posX < (0 - settings.SPRITE_WIDTH)) {
+        posX = settings.CANVAS_WIDTH + settings.SPRITE_WIDTH;
+      }
+
+      // Clear before redrawing.
+      context.clearRect(0, 0, settings.CANVAS_WIDTH, settings.CANVAS_HEIGHT);
+
+      if(settings.SPRITE_SPEED == 0) {
+        // Draw dude standing
+        context.drawImage(sprite, 138, (settings.SPRITE_ROW * settings.SPRITE_HEIGHT), settings.SPRITE_WIDTH, settings.SPRITE_HEIGHT, posX, 0, settings.SPRITE_WIDTH, settings.SPRITE_HEIGHT); // 192x256, 32x64
+      }
+      else {
+        context.drawImage(sprite, offset, (settings.SPRITE_ROW * settings.SPRITE_HEIGHT), settings.SPRITE_WIDTH, settings.SPRITE_HEIGHT, posX, 0, settings.SPRITE_WIDTH, settings.SPRITE_HEIGHT); // 192x256, 32x64
+      }
+    };
+ </script>
+
+  <!-- scripts concatenated and minified via build script -->
+  <script src="js/plugins.js"></script>
+  <script src="js/script.js"></script>
+  <!-- end scripts -->
+
+</body>
+</html>
